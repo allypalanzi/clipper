@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+body {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  width: 960px;
+  height: 500px;
+  position: relative;
+}
+
+.bar{
+  width: 25px;
+  float: left;
+  background: steelblue;
+  margin-right: 3px;
+
+}
+
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+<script src="d3-jetpack.js"></script>
+
+<audio id="myAudio" src="clip.m4a"></audio>
+<script>
+
+var width = 960,
+    height = 500,
+    radius = 80,
+    x = Math.sin(2 * Math.PI / 3),
+    y = Math.cos(2 * Math.PI / 3);
+
+
+var context = new AudioContext();
+var audioElement = document.getElementById("myAudio");
+var source = context.createMediaElementSource(audioElement);
+source.connect(context.destination);
+audioElement.play()
+
+
+var analyser = context.createAnalyser();
+
+console.log(analyser.fftSize); // 2048 by default
+console.log(analyser.frequencyBinCount); // will give us 1024 data points
+
+analyser.fftSize = 64;
+console.log(analyser.frequencyBinCount); // fftSize/2 = 32 data points
+
+
+var frequencyData = new Uint8Array(analyser.frequencyBinCount);
+analyser.getByteFrequencyData(frequencyData);
+
+
+
+var bars = d3.select('body')
+  .dataAppend(d3.range(analyser.frequencyBinCount), 'div.bar')
+  .style('height', function(d){ return d + 'px' })
+
+
+
+d3.timer(function(t){
+  // console.log(t)
+  console.log(frequencyData)
+  analyser.getByteFrequencyData(frequencyData);
+
+  bars.style('height', function(i){ return frequencyData[i] + 'px' })
+})
+
+
+
+
+// audioElement.addEventListener("canplay", function() {
+//     var source = context.createMediaElementSource(audioElement);
+
+//     // Connect the output of the source to the input of the analyser
+//     source.connect(analyser);
+
+//     // Connect the output of the analyser to the destination
+//     analyser.connect(context.destination);
+// });
+
+
+</script>

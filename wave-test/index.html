@@ -9,8 +9,19 @@ body {
   position: relative;
 }
 
+.bar{
+  width: 25px;
+  float: left;
+  background: steelblue;
+  margin-right: 3px;
+
+}
+
+
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+<script src="d3-jetpack.js"></script>
+
 
 <audio id="myAudio" src="clip.m4a"></audio>
 <script>
@@ -32,6 +43,13 @@ window.onload = function(){
    
   // frequencyBinCount tells you how many values you'll receive from the analyser
   frequencyData = new Uint8Array(analyser.frequencyBinCount);
+
+  analyser.fftSize = 64;
+
+  var bars = d3.select('body')
+    .dataAppend(d3.range(analyser.frequencyBinCount), 'div.bar')
+      .style('height', function(d){ return d + 'px' })
+
    
   // we're ready to receive some data!
   // loop
@@ -40,7 +58,10 @@ window.onload = function(){
     // update data in frequencyData
     analyser.getByteFrequencyData(frequencyData);
     // render frame based on values in frequencyData
-    console.log(frequencyData)
+    // console.log(frequencyData)
+
+    bars.style('height', function(i){ return frequencyData[i] + 'px' })
+
   }
   audio.play();
   renderFrame();
