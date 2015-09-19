@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+body {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  width: 960px;
+  height: 500px;
+  position: relative;
+}
+
+
+.bar-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+}
+
+.bar{
+  float: left;
+  background: steelblue;
+  margin-right: 0px;
+
+}
+
+
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+<script src="d3-jetpack.js"></script>
+
+<div class="bar-wrapper"></div>
+<audio id="myAudio" src="clip.m4a"></audio>
+<script>
+
+var width = 960,
+    height = 500,
+    radius = 80,
+    x = Math.sin(2 * Math.PI / 3),
+    y = Math.cos(2 * Math.PI / 3);
+
+
+
+
+window.onload = function(){
+  ctx = new AudioContext();
+  audio = document.getElementById('myAudio');
+  audioSrc = ctx.createMediaElementSource(audio);
+  analyser = ctx.createAnalyser();
+  // we have to connect the MediaElementSource with the analyser 
+  audioSrc.connect(analyser);
+  // we could configure the analyser: e.g. analyser.fftSize (for further infos read the spec)
+
+
+   
+  // frequencyBinCount tells you how many values you'll receive from the analyser
+  frequencyData = new Uint8Array(analyser.frequencyBinCount);
+
+
+  analyser.fftSize = 2048*16;
+  var bufferLength = analyser.frequencyBinCount
+  dataArray = new Uint8Array(bufferLength);
+
+  var filterNum = 8
+
+  c = d3.conventions()
+  c.x.domain([0, dataArray.length/filterNum])
+  c.y.domain([0, 200])
+
+  var frequencyData = new Uint8Array(analyser.frequencyBinCount);
+  analyser.getByteFrequencyData(frequencyData);
+
+  var line = d3.svg.line()
+      .x(function(d, i){ return c.x(i) })
+      .y(c.y)
+  
+  console.log(analyser.frequencyBinCount)
+  // var bars = d3.select('.bar-wrapper')
+  //   .dataAppend(d3.range(analyser.frequencyBinCount), 'div.bar')
+  //   .style('width', function(d) { return (960/analyser.frequencyBinCount) + "px" })
+  //   .style('height', function(d){ return d + 'px' })
+
+  var path = c.svg.append('path')
+      .style({fill: 'none', stroke: 'black'})
+
+   
+  // we're ready to receive some data!
+  // loop
+  function renderFrame() {
+    requestAnimationFrame(renderFrame);
+
+    analyser.getByteFrequencyData(frequencyData);
+    analyser.getByteTimeDomainData(dataArray)
+    filterData = dataArray.filter(function(d, i){
+      return !(d % filterNum) })
+    path.attr('d', line(filterData))
+
+    // bars.style('height', function(i){ return frequencyData[i] + 'px' })
+  }
+  audio.play();
+  renderFrame();
+
+}
+
+
+
+
+</script>
