@@ -32,6 +32,9 @@ var width = 960,
     x = Math.sin(2 * Math.PI / 3),
     y = Math.cos(2 * Math.PI / 3);
 
+
+
+
 window.onload = function(){
   ctx = new AudioContext();
   audio = document.getElementById('myAudio');
@@ -47,13 +50,22 @@ window.onload = function(){
   frequencyData = new Uint8Array(analyser.frequencyBinCount);
 
 
-  analyser.fftSize = 64*8*8;
+  analyser.fftSize = 32768/4;
   var bufferLength = analyser.frequencyBinCount
   dataArray = new Uint8Array(bufferLength);
 
-  var bars = d3.select('body')
-    .dataAppend(d3.range(analyser.frequencyBinCount), 'div.bar')
-      .style('height', function(d){ return d + 'px' })
+  var filterNum = 1
+
+  c = d3.conventions()
+  c.x.domain([0, dataArray.length/filterNum])
+  c.y.domain([0, 200])
+
+  var line = d3.svg.line()
+      .x(function(d, i){ return c.x(i) })
+      .y(c.y)
+
+  var path = c.svg.append('path')
+      .style({fill: 'none', stroke: 'black'})
 
    
   // we're ready to receive some data!
@@ -61,11 +73,10 @@ window.onload = function(){
   function renderFrame() {
     requestAnimationFrame(renderFrame);
 
-    analyser.getByteTimeDomainData(dataArray);
-    
-
-    bars.style('height', function(i){ return dataArray[i] + 'px' })
-
+    analyser.getByteTimeDomainData(dataArray)
+    filterData = dataArray.filter(function(d, i){
+      return !(d % filterNum) })
+    path.attr('d', line(filterData))
   }
   audio.play();
   renderFrame();
