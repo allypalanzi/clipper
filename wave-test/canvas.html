@@ -58,7 +58,10 @@ window.onload = function(){
   d3.timer(function(){
     analyser.getByteTimeDomainData(dataArray)
 
-    canvas.width = width
+    canvasCtx.fillStyle = 'rgba(255, 255, 255)';
+    canvasCtx.fillRect(0, 0, width, height);
+    canvasCtx.fill()
+
     canvasCtx.beginPath()
     canvasCtx.strokeStyle = 'steelblue'
     dataArray.forEach(function(d,i){
