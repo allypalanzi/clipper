@@ -5,14 +5,14 @@ https://developer.mozilla.org/en-US/docs/Web/API/AnalyserNode
 
 ### TODO
 
-- [ ] Audio not playing
+- [x] Audio not playing
 - [ ] 
 
 
 ### Whammy
-- [ ] Load lib
+- [x] Load lib
 - [x] switch to canvas
-- [ ] take frames on set timeout
+- [x] take frames on set timeout
 - [ ] overlay text
 
 ### node-canvas
