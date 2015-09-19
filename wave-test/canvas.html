@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+body {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  width: 960px;
+  height: 500px;
+  position: relative;
+}
+
+
+
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+<script src="d3-jetpack.js"></script>
+
+
+<audio id="myAudio" src="clip.m4a" controls='true'></audio>
+<script>
+
+var width = 900
+var height = 500
+
+window.onload = function(){
+
+  ctx = new AudioContext()
+  audio = document.getElementById('myAudio')
+  audioSrc = ctx.createMediaElementSource(audio)
+  analyser = ctx.createAnalyser()
+
+  audio.play()
+
+  var gainNode = ctx.createGain()
+  gainNode.gain.value = 1
+  audioSrc.connect(gainNode)
+  gainNode.connect(ctx.destination)
+  audioSrc.connect(analyser)
+   
+  frequencyData = new Uint8Array(analyser.frequencyBinCount)
+
+  analyser.fftSize = 32768
+  var bufferLength = analyser.frequencyBinCount
+  dataArray = new Uint8Array(bufferLength);
+  
+
+  var x = d3.scale.linear().domain([0, dataArray.length]).range([0, width])
+  var y = d3.scale.linear().domain([0, 200]).range([0, height])
+
+  var canvasSel = d3.select('body')
+    .append('canvas')
+      .attr({width: width, height: height})
+
+  var canvas = canvasSel.node()
+  canvasCtx = canvas.getContext('2d')
+
+   
+  d3.timer(function(){
+    analyser.getByteTimeDomainData(dataArray)
+
+    canvas.width = width
+    canvasCtx.beginPath()
+    canvasCtx.strokeStyle = 'steelblue'
+    dataArray.forEach(function(d,i){
+      canvasCtx.lineTo(x(i), y(d))     
+    })
+    canvasCtx.stroke()
+  })
+
+}
+
+
+
+
+</script>
