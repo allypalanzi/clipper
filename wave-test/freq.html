@@ -23,7 +23,7 @@ body {
 <script src="d3-jetpack.js"></script>
 
 
-<audio id="myAudio" src="clip.m4a"></audio>
+<audio id="myAudio" src="clip.m4a" controls='true'></audio>
 <script>
 
 var width = 960,
@@ -36,10 +36,22 @@ var width = 960,
 
 
 window.onload = function(){
+
   ctx = new AudioContext();
   audio = document.getElementById('myAudio');
   audioSrc = ctx.createMediaElementSource(audio);
   analyser = ctx.createAnalyser();
+
+  audio.play();
+
+  var gainNode = ctx.createGain();
+  gainNode.gain.value = 1
+  // connect the AudioBufferSourceNode to the gainNode
+  // and the gainNode to the destination, so we can play the
+  // music and adjust the volume using the mouse cursor
+  audioSrc.connect(gainNode);
+  gainNode.connect(ctx.destination);
+
   // we have to connect the MediaElementSource with the analyser 
   audioSrc.connect(analyser);
   // we could configure the analyser: e.g. analyser.fftSize (for further infos read the spec)
@@ -78,7 +90,6 @@ window.onload = function(){
       return !(d % filterNum) })
     path.attr('d', line(filterData))
   }
-  audio.play();
   renderFrame();
 
 }
