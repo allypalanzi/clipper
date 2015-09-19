@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+body {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  width: 960px;
+  height: 500px;
+  position: relative;
+}
+
+
+
+</style>
+
+<div style='display: none'>
+  <progress id="progress" value="0" max="60" min="0" style="width: 300px"></progress>
+  <br>
+  <canvas id="canvas" width="150" height="150"></canvas>
+  <video id="awesome" width="150" height="150" controls autoplay loop></video>
+  <br>
+  Status: <span id="status">Idle</span>
+</div>
+
+<a style="display:none" id="download" download="clock.webm">Download WebM</a>
+
+<audio id="myAudio" src="clip.m4a" controls='true'></audio>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+<script src="d3-jetpack.js"></script>
+<script src="whammy.js"></script>
+
+
+
+<script>
+
+var width = 900
+var height = 500
+
+var video = new Whammy.Video(15);
+
+
+
+window.onload = function(){
+
+  ctx = new AudioContext()
+  audio = document.getElementById('myAudio')
+  audioSrc = ctx.createMediaElementSource(audio)
+  analyser = ctx.createAnalyser()
+
+  audio.play()
+
+  var gainNode = ctx.createGain()
+  gainNode.gain.value = 1
+  audioSrc.connect(gainNode)
+  gainNode.connect(ctx.destination)
+  audioSrc.connect(analyser)
+   
+  frequencyData = new Uint8Array(analyser.frequencyBinCount)
+
+  analyser.fftSize = 32768
+  var bufferLength = analyser.frequencyBinCount
+  dataArray = new Uint8Array(bufferLength);
+  
+
+  var x = d3.scale.linear().domain([0, dataArray.length]).range([0, width])
+  var y = d3.scale.linear().domain([50, 180]).range([0, height])
+
+  var canvasSel = d3.select('body')
+    .append('canvas')
+      .attr({width: width, height: height})
+
+  var canvas = canvasSel.node()
+  canvasCtx = canvas.getContext('2d')
+
+   
+  d3.timer(function(t){
+    analyser.getByteTimeDomainData(dataArray)
+
+    canvas.width = width
+    canvasCtx.beginPath()
+
+    canvasCtx.rect(0, 0, width, height)
+    canvasCtx.fillStyle = 'black'
+    canvasCtx.fill()
+
+    canvasCtx.strokeStyle = 'steelblue'
+    canvasCtx.lineWidth = 1
+    dataArray.forEach(function(d,i){
+      canvasCtx.lineTo(x(i), y(d))     
+    })
+    canvasCtx.stroke()
+
+    video.add(canvasCtx)
+
+    if (t < 7000) return false
+
+    var start_time = +new Date;
+    var output = video.compile();
+    var end_time = +new Date;
+    var url = webkitURL.createObjectURL(output);
+    document.getElementById('awesome').src = url; //toString converts it to a URL via Object URLs, falling back to DataURL
+    document.getElementById('download').style.display = '';
+    document.getElementById('download').href = url;
+    document.getElementById('status').innerHTML = "Compiled Video in " + (end_time - start_time) + "ms, file size: " + Math.ceil(output.size / 1024) + "KB";
+
+
+    return true
+  })
+
+}
+
+
+
+
+</script>

@@ -11,10 +11,10 @@ https://developer.mozilla.org/en-US/docs/Web/API/AnalyserNode
 
 ### Whammy
 - [ ] Load lib
-- [ ] switch to canvas
+- [x] switch to canvas
 - [ ] take frames on set timeout
 - [ ] overlay text
 
 ### node-canvas
-- [ ] higher fps
+- [ ] higher fps ?
 - [ ] where to get audio data from?
