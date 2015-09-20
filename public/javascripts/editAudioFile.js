@@ -13,11 +13,13 @@ AudioFile.init({
 });
 
 AudioFile.Events = function() {
-  document.getElementById("playRegion").onclick = function() {
-    AudioFile.regions.list[Object.keys(AudioFile.regions.list)[0]].play();
-  };
   document.getElementById("play").onclick = function() {
-    AudioFile.play();
+    var region = AudioFile.regions.list[Object.keys(AudioFile.regions.list)[0]];
+    if (region) {
+      region.play();
+    } else {
+      AudioFile.play();
+    }
   };
   document.getElementById("pause").onclick = function() {
     AudioFile.pause();

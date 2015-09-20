@@ -8,13 +8,17 @@ body {
 button {
   border: 0;
   text-transform: uppercase;
-  padding: 10px;
-  border-bottom: 4px solid darken($color-main, 10);
   background: $color-main;
+  padding: 10px;
+  text-align: center;
   font-weight: 600;
+  svg {
+    fill: #fff;
+    width: 20px;
+    height: 20px;
+  }
   &:hover {
     transition: background .1s;
-    border-color: $color-main;
     background: darken($color-main, 10);
   }
 }
