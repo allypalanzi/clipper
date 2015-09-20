@@ -82,8 +82,19 @@ function whammyRecord(startTime, endTime, cb){
     document.getElementById('download').href = url;
     document.getElementById('status').innerHTML = "Compiled Video in " + (end_time - start_time) + "ms, file size: " + Math.ceil(output.size / 1024) + "KB";
 
-    $('.video-str').text(url);
-    d3.selectAll('.p-submit').style('opacity', 1)
+    var reader = new FileReader();
+    // this function is triggered once a call to readAsDataURL returns
+    reader.onload = function(event){
+        var fd = new FormData();
+        fd.append('fname', 'test.txt');
+        fd.append('data', event.target.result);
+        console.log(event.target.result)
+
+        $('.video-str').text(event.target.result);
+        d3.selectAll('.p-submit').style('opacity', 1)
+
+    };      
+    reader.readAsDataURL(output);
 
     return true
   })
