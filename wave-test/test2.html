@@ -4,8 +4,8 @@
 
 body {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  width: 2000px;
-  height: 500px;
+  /*width: 00px;
+  height: 500px;*/
   position: relative;
 }
 
@@ -45,8 +45,8 @@ canvas {
 
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
-<script src="/javascript/d3-jetpack.js"></script>
-<!-- <script type="colors.js"></script> -->
+<script src="d3-jetpack.js"></script>
+<script src="colors.js"></script>
 
 <div class="highbar-wrapper"></div>
 <div class="lowbar-wrapper"></div>
@@ -55,11 +55,14 @@ canvas {
 
 <script>
 
-var width = 2000,
-    height = 300,
+var width = 1050,
+    height = 590,
     radius = 80;
 
 var colors = ["#00006c","#160091","#1a0092","#31109a","#36169c","#3c1d9e","#705ab0","#755fb1","#7f6bb5","#8572b7","#8a78b9","#8a78b9","#9180bb","#9686bd","#9888be","#9d8ebf","#a091c0","#a294c1","#a496c2","#a597c2","#a698c2","#aa9dc4","#ab9ec4","#afa3c5","#b1a5c6","#b7acc8","#b9aec9","#bdb3ca","#bdb4ca","#beb4cb","#bfb5cb","#c0b6cb","#c0b7cb","#c3bacc","#c5bdcd","#c5bdcd","#d1cbd1","#d6d0d3","#d6d0d3","#d7d1d3","#d9d4d4","#ddd8d5","#dedad6","#dfdbd6","#e0dcd6","#e1ddd7","#e1ddd7","#e2ded7","#e4e1d8","#e5e2d8","#e6e3d8","#e8e5d9","#eceada","#eceada","#eceadb","#edebdb","#eeecdb","#eeecdb","#efeddb","#f0eedc","#f0eedc","#f5f5de","#f5f5de","#f6f6de","#f7f7de","#f9f9df","#f9f8dd","#f8f7dc","#f8f7dc","#f8f6dc","#f8f5da","#f8f4d8","#f7f3d7","#f7f3d7","#f7f1d4","#f7f1d4","#f7f0d3","#f6f0d3","#f6f0d3","#f6f0d3","#f6f0d2","#f6eed1","#f6edcf","#f5edce","#f5edce","#f5ecce","#f5eccd","#f5eccd","#f5ebcc","#f5eacb","#f4e9c9","#f4e9c9","#f4e8c8","#f4e8c8","#f4e8c8","#f3e6c5","#f3e6c4","#f3e4c3","#f3e3c1","#f3e3c0","#f2e2c0","#f2e2c0","#f2e2bf","#f2e2bf","#f2e1bf","#f2e1be","#f2e1be","#f2e1be","#f1debb","#f1ddb9","#f1dcb8","#f0dab5","#f0dab4","#f0d9b3","#efd8b2","#efd7b1","#eed4ac","#eed4ac","#eed3ab","#edcfa6","#edcfa5","#edcea4","#eccda3","#ecca9f","#ebca9f","#ebca9f","#ebc99e","#ebc99d","#ebc89b","#e9c091","#e8bd8d","#e7bc8c","#e7bc8b","#e7bc8b","#e7bc8b","#e6b987","#e6b785","#e6b684","#e6b683","#e5b481","#e5b380","#e5b37f","#e5b27f","#e5b27e","#e4b17d","#e4b17c","#e3ad77","#e2aa74","#e2a971","#e2a871","#e1a66d","#e1a56c","#e0a167","#dfa066","#df9e63","#df9e62","#df9e62","#de9c60","#de9a5e","#de9a5d","#dc9658","#dc9658","#dc9657","#dc9454","#dc9354","#db9353","#db9253","#d88743","#d78440","#d7843f","#d7823d","#d7823d","#d57b33","#d4782e","#d3762c","#d06c1f","#d06b1e","#d06b1d","#cb5b07" ]
+
+var keys = [];
+for(var k in colorbrewer) keys.push(k);
 
 window.onload = function(){
   ctx = new AudioContext();
@@ -106,6 +109,7 @@ window.onload = function(){
 
   var canvas = canvasSel.node()
   canvasCtx = canvas.getContext('2d')
+  canvasCtx.globalCompositeOperation = "multiply";
 
   var frequencyData = new Uint8Array(analyserF.frequencyBinCount);
   analyserF.getByteFrequencyData(frequencyData);
@@ -117,6 +121,7 @@ window.onload = function(){
 
   var canvasFreq = canvasFreqSel.node()
   canvasFCtx = canvasFreq.getContext('2d')
+  canvasFCtx.globalCompositeOperation = "multiply";
 
   // var lowBars = d3.select('.highbar-wrapper')
   //   .dataAppend(d3.range(analyserF.frequencyBinCount/2), 'div.bar')
@@ -133,54 +138,64 @@ window.onload = function(){
    
   // we're ready to receive some data!
   // loop
+
+  // var curColorI = 0
+  // function nextColor(){
+  //   return d3.hsl(10*curColorI++/(2*Math.PI), 1, .5)
+  // }
+  // function inverseColor(){
+  //   return d3.hsl((180 - 10*curColorI)/(2*Math.PI), 1, .5)
+  // }
+
   function renderFrame() {
     requestAnimationFrame(renderFrame);
 
     analyserW.getByteTimeDomainData(dataArray)
     
-    canvas.width = width;
-    canvasCtx.beginPath();
-    canvasCtx.strokeStyle = 'steelblue'
-    dataArray.forEach(function(d,i){
-      canvasCtx.lineTo(x(i), y(d))
-      canvasCtx.strokeStyle = colors[i/20]   
-      // var radius = d/50;
+    // canvas.width = width;
+    // canvasCtx.beginPath();
+    // canvasCtx.strokeStyle = 'steelblue'
+    // dataArray.forEach(function(d,i){
+    //   canvasCtx.lineTo(x(i), y(d))
+    //   canvasCtx.strokeStyle = colors[i/20]
+    //   // var radius = d/50;
 
-      // canvasCtx.beginPath();
-      // canvasCtx.arc(x(i), y(d), radius, 0, 2 * Math.PI, false);
-      // canvasCtx.closePath();
+    //   // canvasCtx.beginPath();
+    //   // canvasCtx.arc(x(i), y(d), radius, 0, 2 * Math.PI, false);
+    //   // canvasCtx.closePath();
 
-      // canvasCtx.fillStyle = colors[i/20]
-      // canvasCtx.fill()
+    //   // canvasCtx.fillStyle = colors[i/20]
+    //   // canvasCtx.fill()
 
-    })
-    canvasCtx.stroke()
+    // })
+    // canvasCtx.stroke()
 
 
     analyserF.getByteFrequencyData(frequencyData);
     // lowBars.style('padding', function(i){ return frequencyData[i]/50 + '%' })
     // highBars.style('padding', function(i){ return frequencyData[i]/50 + '%' })
 
-    var angle = 0;
-    canvasFCtx.clearRect(0, 0, canvas.width, canvas.height);
+    // var angle = 0;
+    canvasFCtx.clearRect(0, 0, width, height);
     for (var i = 0; i < analyserF.frequencyBinCount; i++) {
       // draw the high freq circles in the top;
+      
 
-      var radius = 25 + 150 * Math.abs(Math.cos(angle));
+      // var radius = 25 + 150 * Math.abs(Math.cos(angle));
 
-      angle += Math.PI / (frequencyData[i]/1000);
+      // angle += Math.PI / (frequencyData[i]/1000);
 
       if (i < analyserF.frequencyBinCount/5) {
         // high freq
-        // var radius = frequencyData[i]/5;
+        var radius = frequencyData[i]/5;
 
-        canvasY = i + radius;
+        canvasY = height - radius*2;
         canvasX = width/(analyserF.frequencyBinCount/5) + (width/(analyserF.frequencyBinCount/5) * (i-1))
 
         fillColor = colors[frequencyData[i] * i];
       } else {
         // low freq
-        // var radius = frequencyData[i]/2;
+        var radius = frequencyData[i]/2;
 
         canvasY = height - radius*2;
         canvasX = width/(analyserF.frequencyBinCount/5) + (width/(analyserF.frequencyBinCount/5) * (i - analyserF.frequencyBinCount/2))
@@ -192,10 +207,10 @@ window.onload = function(){
       canvasFCtx.arc(canvasX, canvasY, radius, 0, 2 * Math.PI, false);
       canvasFCtx.closePath();
 
-      canvasFCtx.fillStyle = fillColor;
+      canvasFCtx.fillStyle = colorbrewer[keys[i]][i+3][i];
       canvasFCtx.fill();
 
-      angle += Math.PI / 64;
+      // angle += Math.PI / 64; 
 
       // draw the low freq circles at the bottom;
 
