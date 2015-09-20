@@ -21,16 +21,16 @@ class HelloWorldApp < Sinatra::Base
     -pix_fmt yuv420p -c:a copy \
     public/media/output.mp4`
 
+    `ffmpeg -i public/media/output.mp4 -i public/media/cookie-sample.mp3 -ss 0 -t 29 -shortest \
+    -y -c:v copy -c:a aac -strict experimental public/media/out.mp4`
+
     # Tweet It
-    file = File.new("public/media/output.mp4")
+    file = File.new("public/media/out.mp4")
     media_id = JSON.parse(`twurl -H upload.twitter.com "/1.1/media/upload.json" -d "command=INIT&media_type=video/mp4&total_bytes=#{file.size}"`)["media_id"]
 
-    r1 = `twurl -H upload.twitter.com "/1.1/media/upload.json" -d "command=APPEND&media_id=#{media_id}&segment_index=0" --file #{file.path} --file-field "media"`
-    p r1
-    r2 = `twurl -H upload.twitter.com "/1.1/media/upload.json" -d "command=FINALIZE&media_id=#{media_id}"`
-    p r2
-    r3= `twurl "/1.1/statuses/update.json" -d "media_ids=#{media_id}&status=#{params[:message]}"`
-    p r3
+    `twurl -H upload.twitter.com "/1.1/media/upload.json" -d "command=APPEND&media_id=#{media_id}&segment_index=0" --file #{file.path} --file-field "media"`
+    `twurl -H upload.twitter.com "/1.1/media/upload.json" -d "command=FINALIZE&media_id=#{media_id}"`
+    `twurl "/1.1/statuses/update.json" -d "media_ids=#{media_id}&status=#{params[:message]}"`
     send_file 'finished.html'
   end
 
