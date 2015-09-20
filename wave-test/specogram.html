@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+body {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  width: 960px;
+  height: 500px;
+  position: relative;
+  background: black;
+}
+
+canvas{
+  position: fixed;
+}
+
+
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+<script src="d3-jetpack.js"></script>
+
+
+<audio id="myAudio" src="clip-old.m4a" style='width:500px;'></audio>
+<script>
+
+var width = innerWidth,
+    height = innerHeight,
+    π = Math.PI,
+    τ = 2 * π
+
+
+window.onload = function(){
+
+  ctx = new AudioContext()
+  audio = document.getElementById('myAudio')
+  audioSrc = ctx.createMediaElementSource(audio)
+  analyser = ctx.createAnalyser()
+
+  audio.play()
+
+  var gainNode = ctx.createGain()
+  gainNode.gain.value = 1
+  audioSrc.connect(gainNode)
+  gainNode.connect(ctx.destination)
+  audioSrc.connect(analyser)
+   
+  frequencyData = new Uint8Array(analyser.frequencyBinCount)
+
+  analyser.fftSize = 32768
+  var bufferLength = analyser.frequencyBinCount
+  dataArray = new Uint8Array(bufferLength);
+  
+
+  var x = d3.scale.linear().domain([0, dataArray.length/2]).range([0, width])
+  var y = d3.scale.linear().domain([0, 200]).range([height, 0])
+
+  var canvasCtx1 = d3.select('body')
+    .append('canvas')
+      .attr({width: width, height: height})
+    .node()
+    .getContext('2d')
+
+  var canvas2 = d3.select('body')
+    .append('canvas')
+      .attr({width: width, height: height})
+    .node()
+  var canvasCtx2 = canvasCtx2 = canvas2.getContext('2d')
+
+   
+  d3.timer(function(t){
+    analyser.getByteFrequencyData(dataArray)
+
+    //fade clear
+    canvasCtx1.fillStyle = 'rgba(0, 0, 0, .01)'
+    canvasCtx1.fillRect(0, 0, width, height)
+
+    //clear all
+    canvas2.width = width
+
+
+    canvasCtx1.beginPath()
+    canvasCtx1.strokeStyle = nextColor()
+
+    canvasCtx2.beginPath()
+    canvasCtx2.strokeStyle = inverseColor()
+    dataArray.forEach(function(d,i){
+      canvasCtx2.lineTo(x(i), y(d)) 
+      canvasCtx1.rect(x(i), y(d), 2, 2)   
+    })
+    canvasCtx1.stroke()
+    canvasCtx2.stroke()
+
+  })
+
+}
+
+var curColorI = 0
+function nextColor(){
+  return d3.hsl(10*curColorI++/ τ, 1, .5)
+}
+function inverseColor(){
+  return d3.hsl((180 - 10*curColorI)/ τ, 1, .5)
+}
+
+
+
+</script>
