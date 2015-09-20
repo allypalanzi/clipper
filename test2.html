@@ -46,12 +46,12 @@ canvas {
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
 <script src="/javascript/d3-jetpack.js"></script>
-<!-- <script type="colors.js"></script> -->
+<!-- <script type="/javascircolors.js"></script> -->
 
 <div class="highbar-wrapper"></div>
 <div class="lowbar-wrapper"></div>
-<audio id="myAudioF" src="clip.m4a"></audio>
-<audio id="myAudioW" src="clip.m4a"></audio>
+<audio id="myAudioF" src="/media/clip.m4a"></audio>
+<audio id="myAudioW" src="/media/clip.m4a"></audio>
 
 <script>
 
@@ -161,29 +161,29 @@ window.onload = function(){
     // lowBars.style('padding', function(i){ return frequencyData[i]/50 + '%' })
     // highBars.style('padding', function(i){ return frequencyData[i]/50 + '%' })
 
-    var angle = 0;
+    // var angle = 0;
     canvasFCtx.clearRect(0, 0, canvas.width, canvas.height);
     for (var i = 0; i < analyserF.frequencyBinCount; i++) {
       // draw the high freq circles in the top;
 
-      var radius = 25 + 150 * Math.abs(Math.cos(angle));
+      // var radius = 25 + 150 * Math.abs(Math.cos(angle));
 
-      angle += Math.PI / (frequencyData[i]/1000);
+      // angle += Math.PI / (frequencyData[i]/1000);
 
-      if (i < analyserF.frequencyBinCount/5) {
+      if (i < analyserF.frequencyBinCount/2) {
         // high freq
-        // var radius = frequencyData[i]/5;
+        var radius = frequencyData[i]/5;
 
-        canvasY = i + radius;
-        canvasX = width/(analyserF.frequencyBinCount/5) + (width/(analyserF.frequencyBinCount/5) * (i-1))
+        canvasY = frequencyData[i]+ radius;
+        canvasX = width/(analyserF.frequencyBinCount/5) + (width/(analyserF.frequencyBinCount/2) * (i-1))
 
         fillColor = colors[frequencyData[i] * i];
       } else {
         // low freq
-        // var radius = frequencyData[i]/2;
+        var radius = frequencyData[i]/2;
 
         canvasY = height - radius*2;
-        canvasX = width/(analyserF.frequencyBinCount/5) + (width/(analyserF.frequencyBinCount/5) * (i - analyserF.frequencyBinCount/2))
+        canvasX = width/(analyserF.frequencyBinCount/2) + (width/(analyserF.frequencyBinCount/2) * (i - analyserF.frequencyBinCount/2))
 
         fillColor = colors[frequencyData[i] /10];
       }
@@ -195,7 +195,7 @@ window.onload = function(){
       canvasFCtx.fillStyle = fillColor;
       canvasFCtx.fill();
 
-      angle += Math.PI / 64;
+      // angle += Math.PI / 64;
 
       // draw the low freq circles at the bottom;
 
