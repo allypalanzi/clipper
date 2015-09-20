@@ -36,15 +36,16 @@ AudioFile.Events = function() {
       start = AudioFile.regions.list[Object.keys(AudioFile.regions.list)[0]].start;
       end = AudioFile.regions.list[Object.keys(AudioFile.regions.list)[0]].end;
       var selection = window.getSelection();
-      $('.tweet-text').text(selection);
+      $('.video-text').text(selection);
 
-      $(".m-modal").show();
-      $("body").addClass('modal-open');
+      Modal.open();
 
     } else{
       alert('please make a selection first');
     }
   };
+
+  $('#close').on('click', Modal.close);
 
   document.onkeypress = function (e) {
     if(e.charCode == 32) {
@@ -67,6 +68,22 @@ var Transcript = {
   elapsed: "0",
   last_elapsed: "0",
   current: '0.0',
+  spans: $('#transcript span').map(function(index) { return parseInt(this.id)}),
+
+  closest: function (array, num) {
+    var i = 0;
+    var minDiff = 100;
+    var ans;
+    for(i in array){
+      var m = Math.abs(num-array[i]);
+        if(m < minDiff){
+          minDiff = m;
+          ans = array[i];
+        }
+      }
+    return ans;
+  },
+
   update: function() {
     this.elapsed = AudioFile.getCurrentTime();
     if (this.elapsed == this.last_elapsed) {
@@ -75,12 +92,24 @@ var Transcript = {
       if (this.elapsed != (parseInt(this.last_elapsed) + 1)) { elapsed = (parseInt(this.last_elapsed) + 1) }
       this.last_elapsed = this.elapsed;
     }
-    this.current = $('#' + Math.floor(this.elapsed))[0];
+    this.current = '#' + this.closest(this.spans,Math.floor(this.elapsed));
     if (this.current == null) {
       return;
     } else {
-      this.current.style["color"] = "#ff0000";
-      this.current.scrollIntoView();
+      $(this.current).addClass('p-current').siblings().removeClass('p-current');
+      $(this.current).get(0).scrollIntoView();
     }
   }
 };
+
+var Modal = {
+  open: function() {
+    $(".m-modal").show();
+    $("body").addClass('modal-open');
+  },
+
+  close: function() {
+    $(".m-modal").hide();
+    $("body").removeClass('modal-open');
+  }
+}
