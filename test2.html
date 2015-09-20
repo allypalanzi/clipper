@@ -1,222 +1,156 @@
 <!DOCTYPE html>
-<meta charset="utf-8">
-<style>
-
-body {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  width: 2000px;
-  height: 500px;
-  position: relative;
-}
-
-
-.highbar-wrapper, .lowbar-wrapper {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-}
-
-.lowbar-wrapper {
-  bottom: 0;
-  align-items: flex-end; 
-}
-
-.bar{
-  float: left;
-  background: steelblue;
-  margin-right: 0px;
-  height: auto;
-  border-radius: 50%;
-}
-
-.lowbar-wrapper .bar {
-  vertical-align: bottom;
-  align-items: flex-end; 
-  position: absolute;
-  bottom: 0;
-}
-
-
-canvas {
-  position: absolute;
-}
-
-
-</style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
-<script src="/javascripts/d3-jetpack.js"></script>
-<script type="/javascripts/colors.js"></script>
-
-<div class="highbar-wrapper"></div>
-<div class="lowbar-wrapper"></div>
-<audio id="myAudioF" src="/media/clip.m4a"></audio>
-<audio id="myAudioW" src="/media/clip.m4a"></audio>
-
-<script>
-
-var width = 960,
-    height = 400,
-    radius = 80;
-
-var colors = ["#00006c","#160091","#1a0092","#31109a","#36169c","#3c1d9e","#705ab0","#755fb1","#7f6bb5","#8572b7","#8a78b9","#8a78b9","#9180bb","#9686bd","#9888be","#9d8ebf","#a091c0","#a294c1","#a496c2","#a597c2","#a698c2","#aa9dc4","#ab9ec4","#afa3c5","#b1a5c6","#b7acc8","#b9aec9","#bdb3ca","#bdb4ca","#beb4cb","#bfb5cb","#c0b6cb","#c0b7cb","#c3bacc","#c5bdcd","#c5bdcd","#d1cbd1","#d6d0d3","#d6d0d3","#d7d1d3","#d9d4d4","#ddd8d5","#dedad6","#dfdbd6","#e0dcd6","#e1ddd7","#e1ddd7","#e2ded7","#e4e1d8","#e5e2d8","#e6e3d8","#e8e5d9","#eceada","#eceada","#eceadb","#edebdb","#eeecdb","#eeecdb","#efeddb","#f0eedc","#f0eedc","#f5f5de","#f5f5de","#f6f6de","#f7f7de","#f9f9df","#f9f8dd","#f8f7dc","#f8f7dc","#f8f6dc","#f8f5da","#f8f4d8","#f7f3d7","#f7f3d7","#f7f1d4","#f7f1d4","#f7f0d3","#f6f0d3","#f6f0d3","#f6f0d3","#f6f0d2","#f6eed1","#f6edcf","#f5edce","#f5edce","#f5ecce","#f5eccd","#f5eccd","#f5ebcc","#f5eacb","#f4e9c9","#f4e9c9","#f4e8c8","#f4e8c8","#f4e8c8","#f3e6c5","#f3e6c4","#f3e4c3","#f3e3c1","#f3e3c0","#f2e2c0","#f2e2c0","#f2e2bf","#f2e2bf","#f2e1bf","#f2e1be","#f2e1be","#f2e1be","#f1debb","#f1ddb9","#f1dcb8","#f0dab5","#f0dab4","#f0d9b3","#efd8b2","#efd7b1","#eed4ac","#eed4ac","#eed3ab","#edcfa6","#edcfa5","#edcea4","#eccda3","#ecca9f","#ebca9f","#ebca9f","#ebc99e","#ebc99d","#ebc89b","#e9c091","#e8bd8d","#e7bc8c","#e7bc8b","#e7bc8b","#e7bc8b","#e6b987","#e6b785","#e6b684","#e6b683","#e5b481","#e5b380","#e5b37f","#e5b27f","#e5b27e","#e4b17d","#e4b17c","#e3ad77","#e2aa74","#e2a971","#e2a871","#e1a66d","#e1a56c","#e0a167","#dfa066","#df9e63","#df9e62","#df9e62","#de9c60","#de9a5e","#de9a5d","#dc9658","#dc9658","#dc9657","#dc9454","#dc9354","#db9353","#db9253","#d88743","#d78440","#d7843f","#d7823d","#d7823d","#d57b33","#d4782e","#d3762c","#d06c1f","#d06b1e","#d06b1d","#cb5b07" ]
-
-window.onload = function(){
-  ctx = new AudioContext();
-  audioW = document.getElementById('myAudioW');
-  audioSrcW = ctx.createMediaElementSource(audioW);
-  analyserW = ctx.createAnalyser();
-  audioSrcW.connect(analyserW);
-
-  audioF = document.getElementById('myAudioF');
-  audioSrcF = ctx.createMediaElementSource(audioF);
-
-  // we have to connect the MediaElementSource with the analyser 
-  analyserF = ctx.createAnalyser();
-  // we could configure the analyser: e.g. analyser.fftSize (for further infos read the spec)
-  audioSrcF.connect(analyserF);
-   
-
-  var gainNode = ctx.createGain()
-  gainNode.gain.value = 1
-  audioSrcW.connect(gainNode)
-  gainNode.connect(ctx.destination)
-  audioSrcW.connect(analyserW)
-
-  // frequencyBinCount tells you how many values you'll receive from the analyser
-  frequencyData = new Uint8Array(analyserW.frequencyBinCount);
-
-  // frequencyBinCount tells you how many values you'll receive from the analyser
-  frequencyData = new Uint8Array(analyserF.frequencyBinCount);
-
-  var filterNum = 2;
-
-  analyserW.fftSize = 32768;
-  analyserF.fftSize = 64;
-
-  var bufferLength = analyserW.frequencyBinCount
-  dataArray = new Uint8Array(bufferLength);
-
-  var x = d3.scale.linear().domain([0, dataArray.length]).range([0, width])
-  var y = d3.scale.linear().domain([0, 200]).range([0, height])
-  
-  var canvasSel = d3.select('body')
-    .append('canvas')
-      .attr({width: width, height: height})
-
-  var canvas = canvasSel.node()
-  canvasCtx = canvas.getContext('2d')
-  canvasCtx.globalCompositeOperation = "multiply";
-
-  var frequencyData = new Uint8Array(analyserF.frequencyBinCount);
-  analyserF.getByteFrequencyData(frequencyData);
-
-
-  var canvasFreqSel = d3.select('body')
-    .append('canvas')
-      .attr({width: width, height: height})
-
-  var canvasFreq = canvasFreqSel.node()
-  canvasFCtx = canvasFreq.getContext('2d')
-  canvasFCtx.globalCompositeOperation = "multiply";
-  canvasFCtx.globalAlpha = 0.5;
-
-  // var lowBars = d3.select('.highbar-wrapper')
-  //   .dataAppend(d3.range(analyserF.frequencyBinCount/2), 'div.bar')
-  //   .attr("class", "bar highBar")
-  //   .style('width', function(d) { return (960/analyserF.frequencyBinCount) + "px" })
-  //   // .style('height', function(d){ return '10px' })
-
-  // var highBars = d3.select('.lowbar-wrapper')
-  //   .dataAppend(d3.range(analyserF.frequencyBinCount/2), 'div.bar')
-  //   .attr("class", "bar lowBar")
-  //   .style('width', function(d) { return (960/analyserF.frequencyBinCount) + "px" })
-  //   // .style('height', function(d){ return '10px' })
-
-   
-  // we're ready to receive some data!
-  // loop
-  // var fps = 5
-  function renderFrame() {
-    // setTimeout(function() {
-      requestAnimationFrame(renderFrame);
-    // }, 1000 / fps);
-
-    analyserW.getByteTimeDomainData(dataArray)
-    
-    canvas.width = width;
-    canvasCtx.beginPath();
-    canvasCtx.strokeStyle = 'steelblue'
-    dataArray.forEach(function(d,i){
-      canvasCtx.lineTo(x(i), y(d))
-      canvasCtx.strokeStyle = colors[i/20]   
-      // var radius = d/50;
-
-      // canvasCtx.beginPath();
-      // canvasCtx.arc(x(i), y(d), radius, 0, 2 * Math.PI, false);
-      // canvasCtx.closePath();
-
-      // canvasCtx.fillStyle = colors[i/20]
-      // canvasCtx.fill()
-
-    })
-    canvasCtx.stroke()
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>klpr.</title>
+  <link rel="stylesheet" type="text/css" href='/stylesheets/style.css'>
+  <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+</head>
+<body>
+  <section class="l-container">
+    <h1>klpr.</h1>
+    <section class="l-main">
+      <div id="wave"></div>
+      <div id="transcript" class="m-transcript">
+        <span id='0' class='timestamp'>
+          Hey guys this is Miles and I'm here again with Peter for your podcast extra for the week. We know it's been a while this has been.
+          </span>
+          <span id='10' class='timestamp'>
+          We've missed you but it's good to be back and we've got a great extra this yes you know what if we got one of what we were in Houston last week and there were many wonderful things about Houston. Our guest for the show was the
+          </span>
+          <span id='21' class='timestamp'>
+          astronaut Sonny Williams And as often happens with the lovely terming guess especially when they're on stage with us we recorded way too much good stuff for the broadcast so a special treat for you
+          </span>
+          <span id='31' class='timestamp'>
+          pod cast Extra listeners. Another anecdote from Sonny Williams from her life on the International Space Station. We're reading about you and we discovered that your taste in food caused a
+          </span>
+          <span id='42' class='timestamp'>
+          crisis on the International Space Station. Oh yeah so I like sushi and I think a lot of people like sushi and you know part of that whole process is mixing together that
+          </span>
+          <span id='53' class='timestamp'>
+          you know I have a thing about not eating sushi too far from the coasts like
+          </span>
+          <span id='60' class='timestamp'>
+          three miles up. That is it. Well it really wasn't. OK so it was like you know salmon
+          </span>
+          <span id='66' class='timestamp'>
+          the salmon little bit of a bag but I was pretending. OK I have a friend thinking about Earth and thinking that you know I like that she said I'm going to make this or like that. So I had mentioned
+          </span>
+          <span id='76' class='timestamp'>
+          this to my parents and they said we have stuff that your family can send up so they have put this type of mayonnaise in one of these bags and it got
+          </span>
+          <span id='86' class='timestamp'>
+          loaded on a rocket and brought up to the space station we opened up I got a call we have a study that we could put on
+          </span>
+          <span id='92' class='timestamp'>
+          the on the salmon. So I'm holding my salmon in one hand I'm excited and with the with a jar and I'm taking the lid off and I took the lid off and I
+          </span>
+          <span id='103' class='timestamp'>
+          got that other little paper thing is in there so I open that paper thing and as I open the paper thin because of the pressure changes. The launching of their the stuff shooting out at
+          </span>
+          <span id='113' class='timestamp'>
+          me and I might be green. Mayonnaise stuff is pouring out of me and I'm trying to catch it which is sort of gross with me because I know otherwise it's going to go all
+          </span>
+          <span id='123' class='timestamp'>
+          over the space station's going to and they're just going to float shooting out because it was the pressure differential was inside of them when I was packaged and then came up there in
+          </span>
+          <span id='133' class='timestamp'>
+          the pressure's changing so it's like shooting at me and so I had this blue sweater done and so filled out this green dots and I'm trying to figure out how do I put something down as meaning you can just put it down you put it in and then it goes
+          </span>
+          <span id='143' class='timestamp'>
+          away and that's one of the worst places I got is like Lucy Ricardo Yeah I
+          </span>
+          <span id='151' class='timestamp'>
+          think we were in roughshod over the notion that your parents could
+          </span>
+          <span id='157' class='timestamp'>
+          send you would have the deliveries to get a little care package like my son's away in Virginia and I feel like I go a lot of effort to send him cookies
+          </span>
+          <span id='167' class='timestamp'>
+          sometimes but the idea that they would just put it in a rocket and take it to you know they're cutting back on the postal service here you
+          </span>
+          <span id='178' class='timestamp'>
+          know you guys are literally rocket scientists and no one figured out
+          </span>
+          <span id='184' class='timestamp'>
+          that maybe you shouldn't open the jar to the top so that was something millions
+          </span>
+          <span id='194' class='timestamp'>
+          in Houston with Alonzo Bodden Paula Poundstone and mustard running to listen to the whole show just go to your regular pod cast feed and we'll see you next week. From the man Center
+          </span>
+          <span id='204' class='timestamp'>
+          in Philadelphia.
+      </div>
+      <div class="m-controls">
+        <button id="play">
+          <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+   viewBox="126.7 175.7 550.2 662.5" enable-background="new 126.7 175.7 550.2 662.5" xml:space="preserve">
+          <g>
+            <path d="M197.7,186.4c-39.2-24.1-70.9-6.3-70.9,39.7v561.6c0,46,31.8,63.8,70.9,39.7l449.9-276.8c39.2-24.1,39.1-63.2,0-87.3
+              L197.7,186.4z"/>
+          </g>
+          </svg>
+        </button>
+        <button id="pause">
+          <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+             viewBox="4.5 9 782.9 792" enable-background="new 4.5 9 782.9 792" xml:space="preserve">
+          <g>
+            <path d="M4.5,88.6C4.5,44.7,40.2,9,84.2,9h167.4c44,0,79.7,35.7,79.7,79.6v632.7c0,44-35.7,79.7-79.7,79.7H84.2
+              c-44,0-79.7-35.7-79.7-79.7C4.5,721.3,4.5,88.6,4.5,88.6z"/>
+            <path d="M460.7,88.6c0-44,35.7-79.6,79.6-79.6h167.4c44,0,79.6,35.7,79.6,79.6v632.7c0,44-35.6,79.7-79.6,79.7H540.4
+              c-44,0-79.6-35.7-79.6-79.7L460.7,88.6L460.7,88.6z"/>
+          </g>
+          </svg>
+        </button>
+        <button id="share"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 44.71 36.327" class="<%= svg_class %>" data-svg-fallback="/v/verge/scripts/../images/social/twitter.png" data-svg-fallback-override="<%= fallback %>"><path d="M44.71 4.295c-1.656.724-3.415 1.242-5.278 1.449 1.914-1.139 3.363-2.95 4.036-5.071-1.759 1.035-3.726 1.811-5.796 2.225-1.707-1.76-4.088-2.898-6.727-2.898-5.071 0-9.159 4.088-9.159 9.159 0 .725.051 1.449.207 2.122-7.607-.414-14.335-3.881-18.888-9.418-.777 1.345-1.242 2.742-1.242 4.45 0 3.157 1.604 5.951 4.088 7.607-1.501-.052-2.898-.466-4.14-1.138v.103c0 4.45 3.157 8.176 7.348 9.004-.776.207-1.604.311-2.432.311-.569 0-1.138-.052-1.708-.155 1.139 3.622 4.554 6.313 8.539 6.365-3.105 2.483-7.09 4.346-11.385 4.346-.724 0-1.449-.051-2.173-.155 4.036 2.588 8.9 3.726 14.075 3.726 16.87 0 26.081-13.972 26.081-26.081v-1.19c1.76-1.294 3.312-2.898 4.554-4.761" class="path1"/></svg>
+        </button>
+        <button id="download">
+        <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+           viewBox="160.8 454.8 244.4 222.9" enable-background="new 160.8 454.8 244.4 222.9" xml:space="preserve">
+        <path d="M211.7,461.6V545c0,3.8-3,6.8-6.8,6.8h-37.1c-6.1,0-9.1,6.8-5.3,11.4l115.2,112.2c3,3,7.6,3,10.6,0l115.2-112.2
+          c3.8-4.5,0.8-11.4-5.3-11.4h-37.1c-3.8,0-6.8-3-6.8-6.8v-83.4c0-3.8-3-6.8-6.8-6.8H218.6C214.8,454.8,211.7,457.8,211.7,461.6z"/>
+        </svg>
+        </button>
+      </div>
+      <div id="share" class="m-modal">
+        <h1>twtr.</h1>
+        <span class="p-close" id="close">x</span>
+        <form class="p-form" action="/tweet" method="post">
+          <h3>Tweet text:</h3>
+          <textarea class="tweet-text" type="text" name="message">Check this out!  (Caution may make you smarter.)</textarea>
+          <h3>Video text:</h3>
+          <textarea class="video-text" type="text"></textarea>
+          <textarea style="display:none;" type="text" class="start-time"></textarea>
+          <textarea style="display:none;" type="text" class="end-time"></textarea>
+          <input class="p-submit" type="submit" tex="tweet">
+        </form>
+      </div>
+    </section>
+  </section>
 
 
-    analyserF.getByteFrequencyData(frequencyData);
-    // lowBars.style('padding', function(i){ return frequencyData[i]/50 + '%' })
-    // highBars.style('padding', function(i){ return frequencyData[i]/50 + '%' })
+  <div style='display: none'>
+    <progress id="progress" value="0" max="60" min="0" style="width: 300px"></progress>
+    <br>
+    <canvas id="canvas" width="150" height="150"></canvas>
+    <video id="awesome" width="150" height="150" controls autoplay loop></video>
+    <br>
+    Status: <span id="status">Idle</span>
+  </div>
 
-    var angle = 0;
-    canvasFCtx.clearRect(0, 0, canvas.width, canvas.height);
-    for (var i = 0; i < analyserF.frequencyBinCount; i++) {
-      // draw the high freq circles in the top;
+  <a style="display:none" id="download" download="clock.webm">Download WebM</a>
 
-      var radius = 25 + 150 * Math.abs(Math.cos(angle));
+  <audio id="myAudio" src="/media/cookie-sample.mp3" controls='true'></audio>
 
-      angle += Math.PI / (frequencyData[i]);
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+  <script src="/javascripts/d3-jetpack.js"></script>
+  <script src="/javascripts/whammy.js"></script>
 
-      // if (i < analyserF.frequencyBinCount/2) {
-        // high freq
-        // var radius = frequencyData[i]/5;
-
-        canvasY = frequencyData[i]+ radius;
-        canvasX = width/(analyserF.frequencyBinCount/5) + (width/(analyserF.frequencyBinCount/2) * (i-1))
-
-        fillColor = colors[frequencyData[i] * i];
-      // } else {
-      //   // low freq
-      //   var radius = frequencyData[i]/2;
-
-      //   canvasY = height - radius*2;
-      //   canvasX = width/(analyserF.frequencyBinCount/2) + (width/(analyserF.frequencyBinCount/2) * (i - analyserF.frequencyBinCount/2))
-
-      //   fillColor = colors[frequencyData[i] /10];
-      // }
-
-      canvasFCtx.beginPath();
-      canvasFCtx.arc(canvasX, canvasY, radius, 0, 2 * Math.PI, false);
-      canvasFCtx.closePath();
-
-      canvasFCtx.fillStyle = fillColor;
-      canvasFCtx.fill();
-
-      angle += Math.PI / 64;
-
-      // draw the low freq circles at the bottom;
-
-    }
+  <script src="/javascripts/wavesurfer.min.js"></script>
+  <script src="/javascripts/wavesurfer_regions.js"></script>
+  <script src="/javascripts/editAudioFile.js"></script>
 
 
-
-  }
-  audioW.play();
-  audioF.play();
-  renderFrame();
-
-}
-
-
-
-
-</script>
+  <script src="/javascripts/whammy-guy.js"></script>
+</body>
+</html>
