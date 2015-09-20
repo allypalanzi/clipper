@@ -4,7 +4,7 @@
 
 .m-transcript {
   margin: 20px auto;
-  max-height: 300px;
+  max-height: 150px;
   overflow: scroll;
   span {
     display: block;
@@ -23,6 +23,10 @@ body.modal-open {
     background-color: rgba($color-body, .9);
     z-index: 10000;
   }
+}
+
+.m-wave {
+  margin: 20px auto;
 }
 
 .m-modal {
