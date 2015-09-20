@@ -5,7 +5,7 @@ var Canvas = require('canvas'),
 
 
 
-var rows = fs.readFileSync('out.dat', 'utf8').split('\n')
+var rows = fs.readFileSync(__dirname + '/out.dat', 'utf8').split('\n')
 var data = rows.map(function(d){
   var row = d.split('  ')
   return {p: +row[0], v: +row[1]}
@@ -14,6 +14,9 @@ var data = rows.map(function(d){
 var pitches = d3.nest().key(function(d){ return d.p }).entries(data)
 console.log(pitches.length, pitches[0].values.length, pitches[100].values.length)
 
+pitches.forEach(function(d){
+  console.log(d.values.length)
+})
 
 
 // instead of finding an element, Canvas is a constructor.
