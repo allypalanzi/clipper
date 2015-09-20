@@ -6,7 +6,7 @@ AudioFile.init({
   progressColor: '#B29E0A',
   scrollParent: 'true',
   fillParent: 'false',
-  minPxPerSec: 50,
+  minPxPerSec: 25,
   normalize: true,
   height: 200
 });

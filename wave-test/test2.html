@@ -185,7 +185,9 @@ window.onload = function(){
 
       // angle += Math.PI / (frequencyData[i]/1000);
 
-      if (i < analyserF.frequencyBinCount/5) {
+      if ( i == analyserF.frequencyBinCount) {
+        return;
+      } else if (i < analyserF.frequencyBinCount/5) {
         // high freq
         var radius = frequencyData[i]/5;
 

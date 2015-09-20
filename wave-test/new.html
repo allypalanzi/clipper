@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+body {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  width: 960px;
+  height: 500px;
+  position: relative;
+}
+
+canvas {
+  position: absolute;
+}
+
+.g-text-wrapper {
+  position: absolute;
+  width: 940px;
+  background-color: #000;
+  padding: 100px 50px 100px 50px;
+
+}
+.g-text-wrapper p {
+  font-size: 50px;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;;
+  font-weight: 100;
+  color: #bcbcbc;
+  opacity: 0.8;
+  vertical-align: middle;
+  margin-top:60px;
+}
+
+p.nudge {
+  font-size: 20px;
+  letter-spacing: 0.8px;
+}
+
+
+</style>
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script> -->
+
+
+<body>
+<script src="d3.js"></script>
+<script src="d3-jetpack.js"></script>
+
+<div class="g-text-wrapper">
+  <p>For the last year, I've spent every working day, trying to figure out where a high school kid was, for an hour after school one day in 1999.</p>
+  <p class="nudge">— Sarah Koenig, Serial, Episode 1</p>
+</div>
+<audio id="myAudioF" src="clip.m4a"></audio>
+<audio id="myAudioW" src="clip.m4a"></audio>
+
+<script>
+
+var width = 1040,
+    height = 500,
+    radius = 80;
+
+var fillColor, strokeColor;
+
+window.onload = function(){
+  ctx = new AudioContext();
+  audioW = document.getElementById('myAudioW');
+  audioSrcW = ctx.createMediaElementSource(audioW);
+  analyserW = ctx.createAnalyser();
+  audioSrcW.connect(analyserW);
+
+  audioF = document.getElementById('myAudioF');
+  audioSrcF = ctx.createMediaElementSource(audioF);
+
+  // we have to connect the MediaElementSource with the analyser 
+  analyserF = ctx.createAnalyser();
+  // we could configure the analyser: e.g. analyser.fftSize (for further infos read the spec)
+  audioSrcF.connect(analyserF);
+
+  var gainNode = ctx.createGain()
+  gainNode.gain.value = 1
+  audioSrcW.connect(gainNode)
+  gainNode.connect(ctx.destination)
+  audioSrcW.connect(analyserW)
+
+  // frequencyBinCount tells you how many values you'll receive from the analyser
+  frequencyData = new Uint8Array(analyserW.frequencyBinCount);
+
+  analyserW.fftSize = 1024;
+  analyserF.fftSize = 64;
+
+  // waveform guy
+  var bufferLength = analyserW.frequencyBinCount
+  dataArray = new Uint8Array(bufferLength);
+
+  var canvasSel = d3.select('body')
+    .append('canvas')
+      .attr({width: width, height: height})
+
+  var canvas = canvasSel.node()
+  canvasCtx = canvas.getContext('2d')
+  canvasCtx.globalCompositeOperation = "multiply";
+  canvasCtx.globalAlpha = 0.1;
+
+
+  // frequency guy
+  var frequencyData = new Uint8Array(analyserF.frequencyBinCount);
+  analyserF.getByteFrequencyData(frequencyData);
+
+  var canvasFreqSel = d3.select('body')
+    .append('canvas')
+      .attr({width: width, height: height})
+
+  var canvasFreq = canvasFreqSel.node()
+  canvasFCtx = canvasFreq.getContext('2d')
+  canvasFCtx.globalCompositeOperation = "multiply";
+  canvasFCtx.globalAlpha = 0.2;
+   
+  // we're ready to receive some data
+
+  var x = d3.scale.linear().domain([0, dataArray.length]).range([0, width])
+  var y = d3.scale.linear().domain([0, 300]).range([0, height])
+
+  function renderFrame(theme) {
+    requestAnimationFrame(renderFrame);
+
+    // waveform guy
+    analyserW.getByteTimeDomainData(dataArray)
+    
+    canvas.width = width;
+
+    dataArray.forEach(function(d,i){
+      
+      var x = d3.scale.linear().domain([0, dataArray.length]).range([0, width])
+      var y = d3.scale.linear().domain([0, d3.max(dataArray)]).range([0, d3.max(dataArray)])
+
+      canvasCtx.lineTo(x(i), y(d)+d)
+
+      if (theme == "light") {
+        var strokeColor = "rgba(0,0,0," + d/400 + ")"  
+      } else {
+        var strokeColor = "rgba(255,255,255," + d/400 + ")"  
+      }
+
+      canvasCtx.strokeStyle = strokeColor
+    })
+    canvasCtx.stroke()
+
+
+    // frequency guy
+    analyserF.getByteFrequencyData(frequencyData);
+
+    var radiusSum = 0;
+
+    canvasFCtx.clearRect(0, 0, canvas.width, canvas.height);
+    for (var i = 0; i < analyserF.frequencyBinCount; i++) {
+        if (theme == "light") {
+          fillColor = "rgba(0,0,0," + frequencyData[i]/400 + ")"
+        } else {
+          fillColor = "rgba(255,255,255," + frequencyData[i]/400 + ")"
+        }
+
+        var radius = frequencyData[i]/Math.PI;
+
+        canvasY = height/2;
+
+        radiusSum += radius
+        canvasX = width/(analyserF.frequencyBinCount/2) + (width/(analyserF.frequencyBinCount/2) * (i-1)) + width/2;
+
+        canvasFCtx.beginPath();
+        canvasFCtx.arc(canvasX, canvasY, radius, 0, 2 * Math.PI, false);
+        canvasFCtx.closePath();
+
+        canvasFCtx.fillStyle = fillColor;
+        canvasFCtx.fill();
+
+        // reflection
+        canvasX = width/(analyserF.frequencyBinCount/2) + (width/(analyserF.frequencyBinCount/2) * (i-1)) + width - width/2 - radius - width/(analyserF.frequencyBinCount/2)*i - width/(analyserF.frequencyBinCount/2)*i;
+
+        canvasFCtx.beginPath();
+        canvasFCtx.arc(canvasX, canvasY, radius, 0, 2 * Math.PI, false);
+        canvasFCtx.closePath();
+
+        canvasFCtx.fillStyle = fillColor;
+        canvasFCtx.fill();
+
+    }
+
+  }
+  audioW.play();
+  audioF.play();
+  renderFrame("light");
+
+
+
+}
+
+
+
+
+</script>
+
+</body>
