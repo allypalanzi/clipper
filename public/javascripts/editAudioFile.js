@@ -27,6 +27,21 @@ AudioFile.Events = function() {
       AudioFile.clearRegions();
     }
   });
+  document.getElementById("share").onclick = function() {
+    if(Object.keys(AudioFile.regions.list)[0]) {
+      start = AudioFile.regions.list[Object.keys(AudioFile.regions.list)[0]].start;
+      end = AudioFile.regions.list[Object.keys(AudioFile.regions.list)[0]].end;
+      alert('coming soon!');
+      console.log({"start": start, "end": end});
+    }else{
+      alert('please make a selection first');
+    }
+  };
+  document.onkeypress = function (e) {
+    if(e.charCode == 32) {
+      AudioFile.playPause();
+    }
+  };
 };
 
 AudioFile.on('ready', function () {
