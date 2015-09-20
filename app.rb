@@ -10,8 +10,8 @@ class HelloWorldApp < Sinatra::Base
     send_file 'test2.html'
   end
 
-  get '/testwave2' do
-    send_file 'test3.html'
+  get '/fake' do
+    send_file 'fake.html'
   end
 
   post '/tweet' do
