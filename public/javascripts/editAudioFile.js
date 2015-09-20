@@ -7,15 +7,6 @@ AudioFile.init({
   progressColor: 'purple'
 });
 
-AudioFile.GetRegion = function() {
-  var regionLength = document.querySelector('.wavesurfer-region').getAttribute('title');
-  var region = {
-    start: 30,
-    end: 50
-  };
-  return region;
-};
-
 AudioFile.Events = function() {
   document.getElementById("playRegion").onclick = function() {
     AudioFile.Region.play();
@@ -26,6 +17,11 @@ AudioFile.Events = function() {
   document.getElementById("pause").onclick = function() {
     AudioFile.pause();
   };
+  document.getElementById("wave").addEventListener('mousedown', function (e) {
+    if(document.querySelector('.wavesurfer-region')) {
+      AudioFile.clearRegions();
+    }
+  });
 };
 
 AudioFile.on('ready', function () {
