@@ -16,6 +16,8 @@ class HelloWorldApp < Sinatra::Base
   end
 
   post '/tweet' do
+    `phantomjs public/javascripts/capture.js 'HELLLOOOOO' 'PLEASE WORK'`
+
     `ffmpeg -i public/media/bg.mov -i public/media/fore.png \
     -y -r 30 -filter_complex "[0:v][1:v] overlay=225:225:enable='between(t,0,20)'" \
     -pix_fmt yuv420p -c:a copy \

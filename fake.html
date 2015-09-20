@@ -20,6 +20,10 @@ canvas {
   padding: 100px 50px 100px 50px;
 
 }
+
+.light {
+  background-color: transparent;
+}
 .g-text-wrapper p {
   font-size: 50px;
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;;
@@ -37,19 +41,19 @@ p.nudge {
 
 
 </style>
-<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script> -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
 
 
 <body>
-<script src="d3.js"></script>
-<script src="d3-jetpack.js"></script>
+<!-- <script src="d3.js"></script> -->
+<script src="/javascripts/d3-jetpack.js"></script>
 
 <div class="g-text-wrapper">
   <p>For the last year, I've spent every working day, trying to figure out where a high school kid was, for an hour after school one day in 1999.</p>
   <p class="nudge">— Sarah Koenig, Serial, Episode 1</p>
 </div>
-<audio id="myAudioF" src="clip.m4a"></audio>
-<audio id="myAudioW" src="clip.m4a"></audio>
+<audio id="myAudioF" src="/media/clip.m4a"></audio>
+<audio id="myAudioW" src="/media/clip.m4a"></audio>
 
 <script>
 
@@ -58,11 +62,6 @@ var width = 1040,
     radius = 80;
 
 var fillColor, strokeColor;
-  
-var themeBackground = 'light';
-  if (themeBackground == 'light') {
-    d3.select(".g-text-wrapper").style("background-color", "transparent")
-  }
 
 window.onload = function(){
   ctx = new AudioContext();
@@ -123,12 +122,6 @@ window.onload = function(){
   var x = d3.scale.linear().domain([0, dataArray.length]).range([0, width])
   var y = d3.scale.linear().domain([0, 300]).range([0, height])
 
-
-  var themeBackground = 'light';
-  if (themeBackground == 'light') {
-    d3.select(".g-text-wrapper").style("background-color", "transparent")
-  }
-
   function renderFrame(theme) {
     requestAnimationFrame(renderFrame);
 
@@ -144,12 +137,13 @@ window.onload = function(){
 
       canvasCtx.lineTo(x(i), y(d)+d)
 
-      if (themeBackground == 'light') {
-        canvasCtx.strokeStyle = "rgba(0,0,0," + d/400 + ")"  
+      if (theme == "light") {
+        var strokeColor = "rgba(0,0,0," + d/400 + ")"  
       } else {
-        canvasCtx.strokeStyle = "rgba(255,255,255," + d/400 + ")"  
+        var strokeColor = "rgba(255,255,255," + d/400 + ")"  
       }
-      
+
+      canvasCtx.strokeStyle = strokeColor
     })
     canvasCtx.stroke()
 
@@ -161,10 +155,10 @@ window.onload = function(){
 
     canvasFCtx.clearRect(0, 0, canvas.width, canvas.height);
     for (var i = 0; i < analyserF.frequencyBinCount; i++) {
-        if (themeBackground == "light") {
-          fillColor = "rgba(0,0,0," + frequencyData[i]/1000 + ")"
+        if (theme == "light") {
+          fillColor = "rgba(0,0,0," + frequencyData[i]/400 + ")"
         } else {
-          fillColor = "rgba(255,255,255," + frequencyData[i]/1000 + ")"
+          fillColor = "rgba(255,255,255," + frequencyData[i]/400 + ")"
         }
 
         var radius = frequencyData[i]/Math.PI;
