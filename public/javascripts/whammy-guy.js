@@ -1,6 +1,9 @@
 
-var width = 900
-var height = 500
+
+var width = 500,
+    height = 300,
+    π = Math.PI,
+    τ = 2 * π
 
 var video = new Whammy.Video(15);
 
@@ -41,35 +44,54 @@ function whammyRecord(startTime, endTime, cb){
   dataArray = new Uint8Array(bufferLength);
   
 
-  var x = d3.scale.linear().domain([0, dataArray.length]).range([0, width])
-  var y = d3.scale.linear().domain([50, 180]).range([0, height])
 
-  var canvasSel = d3.select('body')
+  var x = d3.scale.linear().domain([0, dataArray.length/2]).range([0, width])
+  var y = d3.scale.linear().domain([0, 200]).range([height, 0])
+
+  var canvasCtx1 = d3.select('body')
     .append('canvas')
       .attr({width: width, height: height})
+    .node()
+    .getContext('2d')
 
-  var canvas = canvasSel.node()
-  canvasCtx = canvas.getContext('2d')
+  var canvas2 = d3.select('body')
+    .append('canvas')
+      .attr({width: width, height: height})
+    .node()
+  var canvasCtx2 = canvasCtx2 = canvas2.getContext('2d')
 
    
   d3.timer(function(t){
-    analyser.getByteTimeDomainData(dataArray)
+    analyser.getByteFrequencyData(dataArray)
 
-    canvas.width = width
-    canvasCtx.beginPath()
+    //fade clear
+    canvasCtx1.fillStyle = 'rgba(0, 0, 0, .01)'
+    canvasCtx1.fillRect(0, 0, width, height)
 
-    canvasCtx.rect(0, 0, width, height)
-    canvasCtx.fillStyle = 'rgba(255, 255, 255, 0)'
-    canvasCtx.fill()
+    //clear all
+    canvas2.width = width
 
-    canvasCtx.strokeStyle = 'steelblue'
-    canvasCtx.lineWidth = 1
+
+    canvasCtx1.beginPath()
+    canvasCtx1.strokeStyle = 'white'
+
+    canvasCtx2.beginPath()
+    canvasCtx2.strokeStyle = 'black'
+
+    var ma = 0
     dataArray.forEach(function(d,i){
-      canvasCtx.lineTo(x(i), y(d))     
-    })
-    canvasCtx.stroke()
+      canvasCtx1.rect(x(i), y(d), 2, 2)   
 
-    video.add(canvasCtx)
+      ma += d
+      if ((i % 32)) return 
+      if (!i) return 
+      canvasCtx2.lineTo(x(i), y(ma/32)) 
+      ma = 0
+    })
+    canvasCtx1.stroke()
+    canvasCtx2.stroke()
+
+    video.add(canvasCtx1)
 
     if (t < 7000) return false
 
