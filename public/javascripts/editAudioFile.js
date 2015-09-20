@@ -1,6 +1,5 @@
 // Create Wave Surfer Object
 var AudioFile = Object.create(WaveSurfer);
-
 AudioFile.init({
   container: document.querySelector('#wave'),
   waveColor: '#19CCBA',
@@ -20,6 +19,9 @@ AudioFile.Events = function() {
     } else {
       AudioFile.play();
     }
+    setInterval(function () {
+      Transcript.update()
+    }, 500);
   };
   document.getElementById("pause").onclick = function() {
     AudioFile.pause();
@@ -42,6 +44,9 @@ AudioFile.Events = function() {
   document.onkeypress = function (e) {
     if(e.charCode == 32) {
       AudioFile.playPause();
+      setInterval(function () {
+        Transcript.update()
+      }, 500);
     }
   };
 };
@@ -52,3 +57,25 @@ AudioFile.on('ready', function () {
 });
 
 AudioFile.load('media/cookie-sample.mp3');
+
+var Transcript = {
+  elapsed: "0",
+  last_elapsed: "0",
+  current: '0.0',
+  update: function() {
+    this.elapsed = AudioFile.getCurrentTime();
+    if (this.elapsed == this.last_elapsed) {
+      return;
+    } else {
+      if (this.elapsed != (parseInt(this.last_elapsed) + 1)) { elapsed = (parseInt(this.last_elapsed) + 1) }
+      this.last_elapsed = this.elapsed;
+    }
+    this.current = document.getElementById(Math.floor(this.elapsed));
+    if (this.current == null) {
+      return;
+    } else {
+      this.current.style["color"] = "#ff0000";
+      //this.current.prev().style["color"] = "#000000"
+    }
+  }
+};
