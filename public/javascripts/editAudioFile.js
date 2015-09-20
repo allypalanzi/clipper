@@ -40,7 +40,8 @@ AudioFile.Events = function() {
     if(Object.keys(AudioFile.regions.list)[0]) {
       start = AudioFile.regions.list[Object.keys(AudioFile.regions.list)[0]].start;
       end = AudioFile.regions.list[Object.keys(AudioFile.regions.list)[0]].end;
-      var selection = window.getSelection();
+      selection = $("#" + Transcript.closest(Transcript.spans, start)).text()
+
       $('.video-text').text(selection);
       $('.start-time').text(start);
       $('.end-time').text(end);
@@ -106,12 +107,8 @@ var Transcript = {
       this.last_elapsed = this.elapsed;
     }
     this.current = '#' + this.closest(this.spans,Math.floor(this.elapsed));
-    if (this.current == null) {
-      return;
-    } else {
-      $(this.current).addClass('p-current').siblings().removeClass('p-current');
-      $(this.current).get(0).scrollIntoView();
-    }
+    $(this.current).addClass('p-current').siblings().removeClass('p-current');
+    $(this.current).get(0).scrollIntoView();
   }
 };
 

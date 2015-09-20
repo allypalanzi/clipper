@@ -23,8 +23,6 @@ class HelloWorldApp < Sinatra::Base
     -pix_fmt yuv420p -c:a copy \
     public/media/output.mp4`
 
-    # `ffmpeg -i public/media/output.mp4 -i public/media/cookie-sample.mp3 -ss 0 -t 29 -shortest \
-    # -y -c:v copy -c:a aac -strict experimental public/media/out.mp4`
     length = (params["end-time"].to_f - params["start-time"].to_f).to_i
 
     `ffmpeg -i public/media/output.mp4 -ss #{params["start-time"].to_i} -t #{length} -i public/media/cookie-sample.mp3\
