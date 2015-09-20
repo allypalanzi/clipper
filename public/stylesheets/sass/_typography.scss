@@ -1,0 +1,28 @@
+@import url(https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600,900,400italic);
+
+body {
+  font-family: 'Source Sans Pro', sans-serif;
+}
+
+button {
+  border: 0;
+  color: #fff;
+  text-transform: uppercase;
+  padding: 10px;
+  border-bottom: 4px solid darken($color-main, 10);
+  background: $color-main;
+  font-weight: 600;
+  &:hover {
+    transition: background .1s;
+    border-color: $color-main;
+    background: darken($color-main, 10);
+  }
+}
+
+h1,h2,h3,h4,h4 {
+  font-weight: 900;
+}
+
+h1 {
+  font-size: 50px;
+}

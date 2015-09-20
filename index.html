@@ -2,17 +2,21 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Clippy</title>
+  <title>Clipper</title>
   <link rel="stylesheet" type="text/css" href='/stylesheets/style.css'>
 </head>
 <body>
-  <div>
-    <h1>Clipper</h1>
-    <div id="wave" style="width:500px;"></div>
-    <button id="playRegion">play region</button>
-    <button id="play">play from scrubber</button>
-    <button id="pause">pause</button>
-  </div>
+  <section class="l-container">
+    <h1>clipper.</h1>
+    <section class="l-main">
+      <div id="wave"></div>
+      <section class="m-controls">
+        <button id="playRegion">play region</button>
+        <button id="play">play from scrubber</button>
+        <button id="pause">pause</button>
+      </section>
+    </section>
+  </section>
   <script src="/javascripts/wavesurfer.min.js"></script>
   <script src="/javascripts/wavesurfer_regions.js"></script>
   <script src="/javascripts/editAudioFile.js"></script>
