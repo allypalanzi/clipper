@@ -34,3 +34,34 @@ textarea {
 .p-current {
   color: $color-secondary;
 }
+
+.p-loader {
+  animation: rotate 3s ease-in-out infinite;
+  border-bottom-color: transparent;
+  border-left-color: transparent;
+  border-radius: 50%;
+  border-right-color: $color-main;
+  border-style: solid;
+  border-top-color: $color-main;
+  box-sizing: border-box;
+  height: 70px;
+  width: 70px;
+  transform: rotate(-200deg);
+}
+.p-loader-container {
+  left: 50%;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%,-50%);
+}
+
+@keyframes rotate {
+  0% { border-width: 10px; }
+  25% { border-width: 3px; }
+  50% {
+    transform: rotate(115deg);
+    border-width: 10px;
+  }
+  75% { border-width: 3px;}
+  100% { border-width: 10px;}
+}
