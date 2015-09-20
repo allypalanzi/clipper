@@ -37,6 +37,8 @@ AudioFile.Events = function() {
       end = AudioFile.regions.list[Object.keys(AudioFile.regions.list)[0]].end;
       var selection = window.getSelection();
       $('.video-text').text(selection);
+      $('.start-time').text(start);
+      $('.end-time').text(end);
 
       Modal.open();
 
