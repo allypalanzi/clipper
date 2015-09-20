@@ -75,6 +75,7 @@ var Transcript = {
       return;
     } else {
       this.current.style["color"] = "#ff0000";
+      this.current.scrollIntoView();
       //this.current.prev().style["color"] = "#000000"
     }
   }

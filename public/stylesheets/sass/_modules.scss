@@ -1,3 +1,13 @@
 .m-controls {
   margin: 20px auto;
 }
+
+.m-transcript {
+  margin: 20px auto;
+  max-height: 300px;
+  overflow: scroll;
+  span {
+    display: block;
+    margin: 10px 0;
+  }
+}
