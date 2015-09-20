@@ -2,11 +2,11 @@
 
 body {
   font-family: 'Source Sans Pro', sans-serif;
+  color: $color-body;
 }
 
 button {
   border: 0;
-  color: #fff;
   text-transform: uppercase;
   padding: 10px;
   border-bottom: 4px solid darken($color-main, 10);
@@ -25,4 +25,5 @@ h1,h2,h3,h4,h4 {
 
 h1 {
   font-size: 50px;
+  text-align: center;
 }

@@ -3,8 +3,8 @@ var AudioFile = Object.create(WaveSurfer);
 
 AudioFile.init({
   container: document.querySelector('#wave'),
-  waveColor: 'violet',
-  progressColor: 'purple',
+  waveColor: '#19CCBA',
+  progressColor: '#B29E0A',
   scrollParent: 'true',
   fillParent: 'false',
   minPxPerSec: 50,
