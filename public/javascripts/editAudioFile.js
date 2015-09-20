@@ -35,8 +35,7 @@ AudioFile.Events = function() {
     if(Object.keys(AudioFile.regions.list)[0]) {
       start = AudioFile.regions.list[Object.keys(AudioFile.regions.list)[0]].start;
       end = AudioFile.regions.list[Object.keys(AudioFile.regions.list)[0]].end;
-      alert('coming soon!');
-      console.log({"start": start, "end": end});
+      $("#share").show();
     }else{
       alert('please make a selection first');
     }
