@@ -20,11 +20,17 @@ textarea {
   font-size: 20px;
   cursor: pointer;
 }
+
 .p-submit {
   display: block;
   width: 100%;
 }
-
+.p-instruction {
+  font-style: italic;
+  font-size: 14px;
+  margin: 0;
+  color: lighten($color-body, 10%);
+}
 .p-current {
   color: $color-secondary;
 }

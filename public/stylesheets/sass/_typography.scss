@@ -34,3 +34,9 @@ h1 {
   font-size: 50px;
   text-align: center;
 }
+
+h3 {
+  border-bottom: 3px solid $color-secondary;
+  padding: 5px 0;
+  margin: 50px 0 5px 0;
+}
