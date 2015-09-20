@@ -33,4 +33,4 @@ AudioFile.on('ready', function () {
   AudioFile.Events();
 });
 
-AudioFile.load('resources/cookie-sample.mp3');
+AudioFile.load('media/cookie-sample.mp3');
