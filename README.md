@@ -8,4 +8,4 @@ get hacking:
 
 serve the site:
 
-`bundle exec middleman`
+`bundle exec rackup`
