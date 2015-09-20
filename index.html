@@ -36,7 +36,6 @@
               </button>
               </div>
               <h3>Transcript</h3>
-              <p class="p-instruction">Select part of transcript to include in video</p>
       <div id="transcript" class="m-transcript">
         <span id='0' class='timestamp'>
           Hey guys this is Miles and I'm here again with Peter for your podcast extra for the week. We know it's been a while this has been.
@@ -121,14 +120,14 @@
       <div id="share" class="m-modal">
         <h1>Share</h1>
         <span class="p-close" id="close">x</span>
-        <form class="p-form" action="/tweet" method="post">
+        <form class="p-form" id="tweet_form" action="/tweet" method="post">
           <h3>Tweet text:</h3>
           <textarea class="tweet-text" type="text" name="message">Check this out!  (Caution may make you smarter.)</textarea>
           <h3>Embed text:</h3>
           <textarea class="video-text" type="text" name="quote"></textarea>
           <textarea style="display:none;" type="text" class="start-time" name="start-time"></textarea>
           <textarea style="display:none;" type="text" class="end-time" name="end-time"></textarea>
-          <input class="p-submit" type="submit" tex="tweet">
+          <button class="p-submit" tex="tweet" onclick="form_submit()">Click me</button>
         </form>
       </div>
     </section>
@@ -136,5 +135,10 @@
   <script src="/javascripts/wavesurfer.min.js"></script>
   <script src="/javascripts/wavesurfer_regions.js"></script>
   <script src="/javascripts/editAudioFile.js"></script>
+  <div class="p-loader-overlay">
+    <div class="p-loader-container">
+      <div class="p-loader"></div>
+    </div>
+  </div>
 </body>
 </html>

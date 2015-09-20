@@ -123,3 +123,9 @@ var Modal = {
     $("body").removeClass('modal-open');
   }
 }
+
+form_submit = function() {
+  $(".p-loader-overlay").show();
+  Modal.close();
+  $("#tweet_form").submit();
+}
