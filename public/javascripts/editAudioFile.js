@@ -70,13 +70,12 @@ var Transcript = {
       if (this.elapsed != (parseInt(this.last_elapsed) + 1)) { elapsed = (parseInt(this.last_elapsed) + 1) }
       this.last_elapsed = this.elapsed;
     }
-    this.current = document.getElementById(Math.floor(this.elapsed));
+    this.current = $('#' + Math.floor(this.elapsed))[0];
     if (this.current == null) {
       return;
     } else {
       this.current.style["color"] = "#ff0000";
       this.current.scrollIntoView();
-      //this.current.prev().style["color"] = "#000000"
     }
   }
 };
