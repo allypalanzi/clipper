@@ -45,6 +45,8 @@ AudioFile.Events = function() {
       $('.start-time').text(start);
       $('.end-time').text(end);
 
+      d3.selectAll('.p-submit').style('opacity', 0)
+      whammyRecord(start, end)
       Modal.open();
 
     } else{

@@ -5,8 +5,7 @@ var height = 500
 var video = new Whammy.Video(15);
 
 
-
-window.onload = function(){
+function whammyRecord(startTime, endTime, cb){
 
   ctx = new AudioContext()
   audio = document.getElementById('myAudio')
@@ -27,8 +26,6 @@ window.onload = function(){
       audio.play();
   }
 
-  startTime = 10;
-  endTime = 15;
   playSegment(startTime, endTime)
 
   var gainNode = ctx.createGain()
@@ -85,6 +82,8 @@ window.onload = function(){
     document.getElementById('download').href = url;
     document.getElementById('status').innerHTML = "Compiled Video in " + (end_time - start_time) + "ms, file size: " + Math.ceil(output.size / 1024) + "KB";
 
+    $('.video-str').text(url);
+    d3.selectAll('.p-submit').style('opacity', 1)
 
     return true
   })
