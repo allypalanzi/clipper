@@ -9,9 +9,10 @@ button {
   border: 0;
   text-transform: uppercase;
   background: $color-main;
-  padding: 10px;
+  padding: 10px 10px 5px 10px;
   text-align: center;
   font-weight: 600;
+  border-bottom: 5px solid darken($color-main, 10);
   svg {
     fill: #fff;
     width: 20px;
@@ -20,6 +21,7 @@ button {
   &:hover {
     transition: background .1s;
     background: darken($color-main, 10);
+    border-color: $color-main;
   }
 }
 
