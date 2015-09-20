@@ -14,7 +14,7 @@ AudioFile.init({
 
 AudioFile.Events = function() {
   document.getElementById("playRegion").onclick = function() {
-    AudioFile.Region.play();
+    AudioFile.regions.list[Object.keys(AudioFile.regions.list)[0]].play();
   };
   document.getElementById("play").onclick = function() {
     AudioFile.play();
