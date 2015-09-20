@@ -1,32 +1,15 @@
-<head>
-<script src="/javascripts/wavesurfer.min.js"></script>
-</head>
-
 <body>
-  <div class="welcome">
+
+  <div>
     <h1>Clipper</h1>
-
-    <div id="wave">
-asdf
-    </div>
-  <script>
-    var wavesurfer = Object.create(WaveSurfer);
-
-    wavesurfer.init({
-    container: document.querySelector('#wave'),
-    waveColor: 'violet',
-    progressColor: 'purple'
-    });
-
-    wavesurfer.on('ready', function () {
-    wavesurfer.play();
-    });
-
-    wavesurfer.load('/media/cookie-sample.wav');
-  </script>
-
-    <p>
-      My son's away in Virginia and I feel like I go a lot of effort to send him cookies sometimes.
-    </p>
+    <div id="wave"></div>
+    <button id="playRegion">play region</button>
+    <button id="play">play from scrubber</button>
+    <button id="pause">pause</button>
   </div>
+
+  <script src="/javascripts/wavesurfer.min.js"></script>
+  <script src="/javascripts/wavesurfer_regions.js"></script>
+  <script src="/javascripts/editAudioFile.js"></script>
+
 </body>
