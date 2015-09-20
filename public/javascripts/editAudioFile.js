@@ -19,12 +19,17 @@ AudioFile.Events = function() {
     } else {
       AudioFile.play();
     }
-    setInterval(function () {
-      Transcript.update()
+    this.update = setInterval(function () {
+      Transcript.update();
     }, 500);
+
+    if (!AudioFile.isPlaying()) {
+      clearInterval(this.update);
+    }
   };
   document.getElementById("pause").onclick = function() {
     AudioFile.pause();
+    clearInterval(this.update);
   };
   document.getElementById("wave").addEventListener('mousedown', function (e) {
     if(document.querySelector('.wavesurfer-region')) {
@@ -52,9 +57,13 @@ AudioFile.Events = function() {
   document.onkeypress = function (e) {
     if(e.charCode == 32) {
       AudioFile.playPause();
-      setInterval(function () {
-        Transcript.update()
+      this.update = setInterval(function () {
+        Transcript.update();
       }, 500);
+
+      if (!AudioFile.isPlaying()) {
+        clearInterval(this.update);
+      }
     }
   };
 };
