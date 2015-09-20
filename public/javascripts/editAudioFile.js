@@ -4,7 +4,12 @@ var AudioFile = Object.create(WaveSurfer);
 AudioFile.init({
   container: document.querySelector('#wave'),
   waveColor: 'violet',
-  progressColor: 'purple'
+  progressColor: 'purple',
+  scrollParent: 'true',
+  fillParent: 'false',
+  minPxPerSec: 50,
+  normalize: true,
+  height: 200
 });
 
 AudioFile.Events = function() {
