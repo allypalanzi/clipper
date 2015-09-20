@@ -36,8 +36,6 @@ audio.oncanplay = function(){
   ctx = new AudioContext()
   audioSrc = ctx.createMediaElementSource(audio)
   analyser = ctx.createAnalyser()
-  analyser.smoothingTimeConstant = .9
-
 
   audio.play()
 
@@ -50,12 +48,13 @@ audio.oncanplay = function(){
   frequencyData = new Uint8Array(analyser.frequencyBinCount)
 
   analyser.fftSize = 32768
+  analyser.smoothingTimeConstant = .1
   var bufferLength = analyser.frequencyBinCount
   dataArray = new Uint8Array(bufferLength);
   
 
-  var x = d3.scale.linear().domain([0, dataArray.length/2]).range([0, width])
-  var y = d3.scale.linear().domain([0, 200]).range([height, 0])
+  var x = d3.scale.linear().domain([0, 2000]).range([0, width])
+  var y = d3.scale.linear().domain([0, dataArray.length/2]).range([height, 0])
 
   var canvasCtx1 = d3.select('body')
     .append('canvas')
@@ -74,7 +73,7 @@ audio.oncanplay = function(){
     analyser.getByteFrequencyData(dataArray)
 
     //fade clear
-    canvasCtx1.fillStyle = 'rgba(0, 0, 0, .01)'
+    canvasCtx1.fillStyle = 'rgba(0, 0, 0, .015)'
     canvasCtx1.fillRect(0, 0, width, height)
 
     //clear all
@@ -85,10 +84,12 @@ audio.oncanplay = function(){
     canvasCtx1.strokeStyle = nextColor()
 
     canvasCtx2.beginPath()
-    canvasCtx2.strokeStyle = inverseColor()
+    canvasCtx2.strokeStyle = 'black'
     dataArray.forEach(function(d,i){
-      canvasCtx2.lineTo(x(i), y(d)) 
-      canvasCtx1.rect(x(i), y(d), 2, 2)   
+      // canvasCtx2.lineTo(x(i), y(d)) 
+      var r = d/150 - .6 + i/bufferLength/1.2
+      if (r < 0) return 
+      canvasCtx1.rect(x(t) % width, y(i), r*100, r)   
     })
     canvasCtx1.stroke()
     canvasCtx2.stroke()
