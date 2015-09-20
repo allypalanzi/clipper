@@ -1,1 +1,0 @@
-`ffmpeg -i frames/%5d.png -c:v libx264 -r 30 -pix_fmt yuv420p circle.mp4`

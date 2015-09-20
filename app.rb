@@ -10,6 +10,10 @@ class HelloWorldApp < Sinatra::Base
     send_file 'test2.html'
   end
 
+  get '/testwave2' do
+    send_file 'test3.html'
+  end
+
   post '/tweet' do
     client = Twitter::REST::Client.new do |config|
       config.consumer_key        = "fGSQjePjFen4St3G75JqKLQ2Q"
