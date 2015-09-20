@@ -35,11 +35,17 @@ AudioFile.Events = function() {
     if(Object.keys(AudioFile.regions.list)[0]) {
       start = AudioFile.regions.list[Object.keys(AudioFile.regions.list)[0]].start;
       end = AudioFile.regions.list[Object.keys(AudioFile.regions.list)[0]].end;
-      $("#share").show();
-    }else{
+      var selection = window.getSelection();
+      $('.tweet-text').text(selection);
+
+      $(".m-modal").show();
+      $("body").addClass('modal-open');
+
+    } else{
       alert('please make a selection first');
     }
   };
+
   document.onkeypress = function (e) {
     if(e.charCode == 32) {
       AudioFile.playPause();

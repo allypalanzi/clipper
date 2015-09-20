@@ -5,7 +5,8 @@ body {
   color: $color-body;
 }
 
-button {
+button,
+.p-submit {
   border: 0;
   text-transform: uppercase;
   background: $color-main;
