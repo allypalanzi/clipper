@@ -30,10 +30,10 @@ var width = innerWidth,
     τ = 2 * π
 
 
-window.onload = function(){
+audio = document.getElementById('myAudio')
+audio.oncanplay = function(){
 
   ctx = new AudioContext()
-  audio = document.getElementById('myAudio')
   audioSrc = ctx.createMediaElementSource(audio)
   analyser = ctx.createAnalyser()
 
