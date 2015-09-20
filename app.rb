@@ -18,6 +18,8 @@ class HelloWorldApp < Sinatra::Base
   post '/tweet' do
     `phantomjs public/javascripts/capture.js '#{params["quote"]}' 'made with clpr.' '#ff00ff'`
 
+    p params['video-str']
+
     `ffmpeg -i public/media/bg.mov -i public/media/fore.png \
     -y -r 30 -filter_complex "[0:v][1:v] overlay=0:0:enable='between(t,0,20)'" \
     -pix_fmt yuv420p -c:a copy \
