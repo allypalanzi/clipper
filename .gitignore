@@ -22,3 +22,6 @@
 
 /node_modules
 /node-test/frames
+/public/media/output.mp4
+/public/media/out.mp4
+/public/media/fore.png
